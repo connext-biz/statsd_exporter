@@ -1,0 +1,18 @@
+[Unit]
+Description=Capture statsd style metrics and expose them to Grafana agent
+Documentation=https://github.com/prometheus/statsd_exporter
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Restart=always
+User=statsd_exporter
+Environment=
+EnvironmentFile=
+WorkingDirectory=/var/lib/statsd_exporter
+ExecStart=/usr/bin/statsd_exporter
+ExecReload=/usr/bin/env kill -HUP $MAINPID
+SendSIGKILL=no
+
+[Install]
+WantedBy=multi-user.target

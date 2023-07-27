@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -e
+
+if [ "$1" = "remove" ]; then
+    if command -v systemctl 2>/dev/null; then
+        systemctl stop statsd-exporter.service > /dev/null 2>&1 || :
+        systemctl disable statsd-exporter.service > /dev/null 2>&1 || :
+    fi
+fi

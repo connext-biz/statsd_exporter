@@ -1,0 +1,32 @@
+#!/bin/sh
+
+set -e
+
+STATSD_DIR="/var/lib/statsd_exporter"
+
+# Initial installation: $1 == configure
+# Upgrade: $1 == configure, $2 == old version
+case "$1" in
+    configure)
+        [ -z "$STATSD_EXPORTER_USER" ] && STATSD_EXPORTER_USER="statsd_exporter"
+        [ -z "$STATSD_EXPORTER_GROUP" ] && STATSD_EXPORTER_GROUP="statsd_exporter"
+        if ! getent group "$STATSD_EXPORTER_GROUP" > /dev/null 2>&1 ; then
+            groupadd -r "$STATSD_EXPORTER_GROUP"
+        fi
+        if ! getent passwd "$STATSD_EXPORTER_USER" > /dev/null 2>&1 ; then
+            useradd -m -r -g "$STATSD_EXPORTER_GROUP" -d $STATSD_DIR -s /sbin/nologin -c "statsd_exporter user" "$STATSD_EXPORTER_USER"
+        fi
+
+        mkdir -p $STATSD_DIR
+        chown $STATSD_EXPORTER_USER:$STATSD_EXPORTER_GROUP $STATSD_DIR
+        chmod 770 $STATSD_DIR
+
+	systemctl enable --now statsd-exporter.service
+
+        if [ -z ${2+x} ] && [ "$RESTART_ON_UPGRADE" = "true" ]; then
+            if command -v systemctl 2>/dev/null; then
+                systemctl daemon-reload
+                systemctl restart statsd-exporter
+            fi
+        fi
+esac

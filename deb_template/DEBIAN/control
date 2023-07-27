@@ -1,0 +1,5 @@
+Package: statsd-exporter
+Version: 0.24.0
+Architecture: amd64
+Maintainer: Khoa Tran <khoa@connext.biz>
+Description: Repackaging Prometheus statsd_exporter into Debian package.
